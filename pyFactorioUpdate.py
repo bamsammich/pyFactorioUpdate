@@ -22,7 +22,7 @@ import yaml
 
 def remove_mods(requested_mods):
     '''remove mods that are not in the defined yaml'''
-    installed = glob.glob(ARGS['mods_dir'] + '*.zip')
+    installed = glob.glob(ARGS.mods_dir + '*.zip')
 
     for zip_file in installed:
         if os.path.basename(zip_file) not in [
@@ -40,7 +40,7 @@ def get_mods():
     for mod in config['mods']:
         update_needed = False
         mod_path = ''
-        old_zips = glob.glob(ARGS['mods_dir'] + mod['name'] + '*.zip')
+        old_zips = glob.glob(ARGS.mods_dir + mod['name'] + '*.zip')
         if old_zips:
             mod_path = old_zips[0]
         if os.path.exists(mod_path):
@@ -76,7 +76,7 @@ def update_mods(requested_mods):
     for mod in requested_mods:
         if mod['update_needed']:
             download_file(mod['url'],
-                          os.path.join(ARGS['mods_dir'], mod['file_name']))
+                          os.path.join(ARGS.mods_dir, mod['file_name']))
             if mod['old_path']:
                 os.remove(mod['old_path'])
 
