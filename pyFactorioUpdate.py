@@ -132,20 +132,18 @@ PARSER.add_argument(
      'Exits with 0 if no new package availble, 10 if newer version available.'
      ),
     action='store_true')
-PARSER.add_argument(
-    '--mods',
-    help='Install/update mods from a manifest file',
-    action='store_true')
+PARSER.add_argument('--mods',
+                    help='Install/update mods from a manifest file',
+                    action='store_true')
 PARSER.add_argument(
     '--api_user',
     help='User mod api auth',
 )
 PARSER.add_argument('--api_token', help='Token for mod api auth')
 PARSER.add_argument('--mod_manifest', help='Mod manifest location.')
-PARSER.add_argument(
-    '--mods_dir',
-    default='/opt/factorio/mods/',
-    help='Directory to manage mods.')
+PARSER.add_argument('--mods_dir',
+                    default='/opt/factorio/mods/',
+                    help='Directory to manage mods.')
 
 # TODO: Allow selection of logging level at run time.
 # PARSER.add_argument(
