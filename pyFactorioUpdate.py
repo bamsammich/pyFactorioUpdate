@@ -166,11 +166,14 @@ PARSER.add_argument('--mod_manifest', help='Mod manifest location.')
 PARSER.add_argument('--mods_dir',
                     default='/opt/factorio/mods/',
                     help='Directory to manage mods.')
+<<<<<<< HEAD
 PARSER.add_argument('--rcon_port',
                     default=27015,
                     help='Port for RCON Protocol communication.')
 PARSER.add_argument('--rcon_password',
                     help='Password to communicate with server via RCON.')
+=======
+>>>>>>> bf0248d49dd5ca6f0a849aebd988c3696e11904b
 
 # TODO: Allow selection of logging level at run time.
 # PARSER.add_argument(
