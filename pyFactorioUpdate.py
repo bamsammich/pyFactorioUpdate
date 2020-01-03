@@ -99,7 +99,8 @@ class RCON:
     def send(self, msg):
         """ Send command/message to RCON server """
         if self.__client is None:
-            LOGGER.error("RCON client is not configured.")
+            logger = logging.getLogger()
+            logger.error("RCON client is not configured.")
             return
         self.__client.send_command(msg)
 
