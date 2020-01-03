@@ -204,7 +204,8 @@ LOGGER.addHandler(LOG_FILE)
 LOGGER.addHandler(LOG_CONSOLE)
 
 RCON_CLIENT = RCON.getInstance()
-RCON_CLIENT.configure('localhost', ARGS.rcon_port, ARGS.rcon_password)
+if ARGS.rcon_password is not None:
+    RCON_CLIENT.configure('localhost', ARGS.rcon_port, ARGS.rcon_password)
 
 CURRENT_ARCHIVE = '/opt/factorio-updater/current'
 if os.path.exists(CURRENT_ARCHIVE):
