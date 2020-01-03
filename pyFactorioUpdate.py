@@ -79,9 +79,9 @@ def broadcast_msg(message):
         LOGGER.warning(
             "Unable to initialize RCON client: RCON password not provided")
         return
-    RCON_CLIENT = factorio_rcon.RCONClient("localhost", ARGS.rcon_port,
-                                           ARGS.rcon_password)
-    RCON_CLIENT.send_command(message)
+    client = factorio_rcon.RCONClient("localhost", ARGS.rcon_port,
+                                      ARGS.rcon_password)
+    client.send_command(message)
 
 
 def update_mods(requested_mods):
