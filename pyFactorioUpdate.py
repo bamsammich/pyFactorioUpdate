@@ -73,15 +73,35 @@ def get_mods():
     return requested_mods, updates_available
 
 
-def broadcast_msg(message):
-    '''Broadcast message in game'''
-    if ARGS.rcon_password is None:
-        LOGGER.warning(
-            "Unable to initialize RCON client: RCON password not provided")
-        return
-    client = factorio_rcon.RCONClient("localhost", ARGS.rcon_port,
-                                      ARGS.rcon_password)
-    client.send_command(message)
+class RCON:
+    __instance = None
+    __client = None
+
+    @staticmethod
+    def getInstance():
+        """ Static access method. """
+        if RCON.__instance is None:
+            RCON()
+        return RCON.__instance
+
+    def __init__(self):
+        """ Virtually private constructor. """
+        if RCON.__instance is not None:
+            raise Exception("RCON instance already exists")
+        else:
+            RCON.__instance = self
+
+    def configure(self, server, port, password):
+        """ Configure RCON client for communication """
+        if self.__client is None:
+            self.__client = factorio_rcon.RCONClient(server, port, password)
+
+    def send(self, msg):
+        """ Send command/message to RCON server """
+        if self.__client is None:
+            LOGGER.error("RCON client is not configured.")
+            return
+        self.__client.send_command(msg)
 
 
 def update_mods(requested_mods):
@@ -183,6 +203,9 @@ LOG_CONSOLE.setFormatter(FORMATTER)
 LOGGER.addHandler(LOG_FILE)
 LOGGER.addHandler(LOG_CONSOLE)
 
+RCON_CLIENT = RCON.getInstance()
+RCON_CLIENT.configure('localhost', ARGS.rcon_port, ARGS.rcon_password)
+
 CURRENT_ARCHIVE = '/opt/factorio-updater/current'
 if os.path.exists(CURRENT_ARCHIVE):
     CURRENT_ARCHIVE_TS = os.path.getctime(CURRENT_ARCHIVE)
@@ -221,7 +244,7 @@ SERVER_DATETIME = get_latest_version(URL)
 SERVER_UPDATE = False
 
 if SERVER_DATETIME > CURRENT_ARCHIVE_DATETIME:
-    broadcast_msg('Server update available')
+    RCON_CLIENT.send('Server update available')
     LOGGER.info('Server update available')
     SERVER_UPDATE = True
 
@@ -233,7 +256,7 @@ if SERVER_UPDATE or MOD_UPDATES or ARGS.force:
 
     if ARGS.check_only:
         sys.exit(10)
-    broadcast_msg('Stopping game server.')
+    RCON_CLIENT.send('Stopping game server.')
     LOGGER.debug('Stopping Factorio.')
     return_code = subprocess.run(['systemctl', 'stop', 'factorio'],
                                  check=False).returncode
