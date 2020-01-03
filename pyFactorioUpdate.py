@@ -84,6 +84,7 @@ def broadcast_msg(message):
 
 def init_rcon():
     '''Initialize RCON client'''
+    global RCON_CLIENT
     if RCON_CLIENT != None:
         return
     if ARGS.rcon_password == None:
