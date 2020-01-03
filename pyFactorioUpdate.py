@@ -19,6 +19,7 @@ import logging
 import sys
 import requests
 import yaml
+import factorio_rcon
 
 
 def remove_mods(requested_mods):
@@ -70,6 +71,27 @@ def get_mods():
             update_needed
         })
     return requested_mods, updates_available
+
+
+RCON_CLIENT = None
+
+
+def broadcast_msg(message):
+    '''Broadcast message in game'''
+    init_rcon()
+    RCON_CLIENT.send_command(message)
+
+
+def init_rcon():
+    '''Initialize RCON client'''
+    if RCON_CLIENT != None:
+        return
+    if ARGS.rcon_password == None:
+        LOGGER.warning(
+            "Unable to initialize RCON client: RCON password not provided")
+        return
+    RCON_CLIENT = factorio_rcon.RCONClient("localhost", ARGS.rcon_port,
+                                           ARGS.rcon_password)
 
 
 def update_mods(requested_mods):
@@ -144,6 +166,11 @@ PARSER.add_argument('--mod_manifest', help='Mod manifest location.')
 PARSER.add_argument('--mods_dir',
                     default='/opt/factorio/mods/',
                     help='Directory to manage mods.')
+PARSER.add_argument('--rcon_port',
+                    default=27015,
+                    help='Port for RCON Protocol communication.')
+PARSER.add_argument('--rcon_password',
+                    help='Password to communicate with server via RCON.')
 
 # TODO: Allow selection of logging level at run time.
 # PARSER.add_argument(
@@ -204,6 +231,7 @@ SERVER_DATETIME = get_latest_version(URL)
 SERVER_UPDATE = False
 
 if SERVER_DATETIME > CURRENT_ARCHIVE_DATETIME:
+    broadcast_msg('Server update available')
     LOGGER.info('Server update available')
     SERVER_UPDATE = True
 
@@ -215,7 +243,7 @@ if SERVER_UPDATE or MOD_UPDATES or ARGS.force:
 
     if ARGS.check_only:
         sys.exit(10)
-
+    broadcast_msg('Stopping game server.')
     LOGGER.debug('Stopping Factorio.')
     return_code = subprocess.run(['systemctl', 'stop', 'factorio'],
                                  check=False).returncode
