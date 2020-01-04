@@ -74,11 +74,12 @@ def get_mods():
 
 
 class RCON:
+    '''Wrapper class for RCON client'''
     __instance = None
     __client = None
 
     @staticmethod
-    def getInstance():
+    def get_instance():
         """ Static access method. """
         if RCON.__instance is None:
             RCON()
@@ -86,10 +87,10 @@ class RCON:
 
     def __init__(self):
         """ Virtually private constructor. """
-        if RCON.__instance is not None:
-            raise Exception("RCON instance already exists")
-        else:
+        if RCON.__instance is None:
             RCON.__instance = self
+        else:
+            raise Exception("RCON instance already exists")
 
     def configure(self, server, port, password):
         """ Configure RCON client for communication """
@@ -204,7 +205,7 @@ LOG_CONSOLE.setFormatter(FORMATTER)
 LOGGER.addHandler(LOG_FILE)
 LOGGER.addHandler(LOG_CONSOLE)
 
-RCON_CLIENT = RCON.getInstance()
+RCON_CLIENT = RCON.get_instance()
 if ARGS.rcon_password is not None:
     RCON_CLIENT.configure('localhost', ARGS.rcon_port, ARGS.rcon_password)
 
